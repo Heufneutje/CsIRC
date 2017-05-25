@@ -16,12 +16,7 @@ namespace CsIRC.Core
         /// <summary>
         /// A dictionary that maps IRC users to their nickname.
         /// </summary>
-        public Dictionary<string, IRCUser> Users { get; private set; }
-
-        /// <summary>
-        /// A dictionary that maps user nicknames to the rank they have in the channel.
-        /// </summary>
-        public Dictionary<string, string> Ranks { get; private set; }
+        public Dictionary<IRCUser, string> Users { get; private set; }
 
         /// <summary>
         /// A dictionary containing all modes currently set in the channel and their parameters.
@@ -36,7 +31,7 @@ namespace CsIRC.Core
         /// <summary>
         /// The hostmask of the user that set the channel topic.
         /// </summary>
-        public string TopicSetter { get; set; }
+        public IRCHostmask TopicSetter { get; set; }
 
         /// <summary>
         /// The date and time on which the current topic was set.
@@ -60,9 +55,18 @@ namespace CsIRC.Core
         public IRCChannel(string name)
         {
             Name = name;
-            Users = new Dictionary<string, IRCUser>();
-            Ranks = new Dictionary<string, string>();
+            Users = new Dictionary<IRCUser, string>();
             Modes = new Dictionary<string, string>();
+            UserlistComplete = true;
+        }
+
+        /// <summary>
+        /// Override for string representation.
+        /// </summary>
+        /// <returns>String representation.</returns>
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

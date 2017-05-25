@@ -19,8 +19,14 @@ namespace CsIRC
             _connection.Connect("heufneutje.net", 6670);
             IRCEvents.MessageReceived += IRCEvents_MessageReceived;
             IRCEvents.MessageSent += IRCEvents_MessageReceived;
+            IRCEvents.MessageCommandReceived += IRCEvents_MessageCommandReceived;
             _connection.Output.SendNICK("CSIRCTest");
             _connection.Output.SendUSER("Test", "Just Heufy messing around");
+        }
+
+        private void IRCEvents_MessageCommandReceived(object sender, MessageCommandEventArgs args)
+        {
+            textBox.Text += $"<{args.User.Nickname}> {args.MessageBody}{Environment.NewLine}";
         }
 
         private void IRCEvents_MessageReceived(object sender, IRCMessageEventArgs args)

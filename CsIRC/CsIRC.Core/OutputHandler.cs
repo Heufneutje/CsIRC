@@ -11,16 +11,18 @@ namespace CsIRC.Core
     public class OutputHandler : IDisposable
     {
         private StreamWriter _outputStream;
+        private IRCConnection _connection;
         private bool _disposedValue; // IDisposable support. To detect redundant calls.
 
         /// <summary>
         /// Creates a new handler.
         /// </summary>
         /// <param name="outputStream">The output side of the connection's network stream.</param>
-        public OutputHandler(StreamWriter outputStream)
+        public OutputHandler(StreamWriter outputStream, IRCConnection connection)
         {
             _outputStream = outputStream;
             _outputStream.AutoFlush = true;
+            _connection = connection;
         }
 
         /// <summary>
@@ -37,7 +39,7 @@ namespace CsIRC.Core
                 parameters[parameters.Length - 1] = $":{lastParam}";
 
             string lineToSend = string.Join(" ", parameters);
-            IRCMessage message = ParsingUtils.ParseRawIRCLine(lineToSend);
+            IRCMessage message = new IRCMessage(lineToSend);
             IRCMessageCancelEventArgs args = new IRCMessageCancelEventArgs(message);
             IRCEvents.OnMessageSending(this, args);
             if (args.Cancel)
@@ -48,7 +50,32 @@ namespace CsIRC.Core
         }
 
         /// <summary>
-        /// Changes your current nickname.
+        /// Joins a given channel.
+        /// </summary>
+        /// <param name="channel">The channel that will be joined.</param>
+        /// <param name="key">Optional. A password if the channel requires one.</param>
+        public void SendJOIN(string channel, string key = null)
+        {
+            if (!_connection.Support.ChannelTypes.Contains(channel[0]))
+                channel = $"{_connection.Support.ChannelTypes.First()}{channel}";
+
+            if (string.IsNullOrEmpty(key))
+                SendRaw("JOIN", channel, key);
+            else
+                SendRaw("JOIN", channel);
+        }
+
+        /// <summary>
+        /// Requests the modes that are currenetly set on a given channel.
+        /// </summary>
+        /// <param name="channel">The channel to checked.</param>
+        public void SendMODE(string channel)
+        {
+            SendRaw("MODE", channel);
+        }
+
+        /// <summary>
+        /// Changes the client's current nickname.
         /// </summary>
         /// <param name="nickname">The new nickname.</param>
         public void SendNICK(string nickname)
@@ -133,6 +160,15 @@ namespace CsIRC.Core
         public void SendUSER(string ident, string gecos)
         {
             SendRaw("USER", ident, "*", "*", gecos);
+        }
+
+        /// <summary>
+        /// Requests WHO information for a given user, channel or search string.
+        /// </summary>
+        /// <param name="target">The target to request WHO information for.</param>
+        public void SendWHO(string target)
+        {
+            SendRaw("WHO", target);
         }
 
         #region IDisposable Support

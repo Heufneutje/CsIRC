@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{21F6625F-CCF8-4857-9F2F-2C7D704A4789}</ProjectGuid>
+    <ProjectGuid>{6AA11890-593B-4CE9-BA36-7B4BA1113554}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CsIRC.Core</RootNamespace>
-    <AssemblyName>CsIRC.Core</AssemblyName>
+    <RootNamespace>CsIRC.Utils</RootNamespace>
+    <AssemblyName>CsIRC.Utils</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,34 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\SharedAssemblyInfo.cs">
-      <Link>Properties\SharedAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="ClientCore.cs" />
-    <Compile Include="Enums.cs" />
-    <Compile Include="Events\Delegates.cs" />
-    <Compile Include="Events\IChannelEvent.cs" />
-    <Compile Include="Events\IRCEvents.cs" />
-    <Compile Include="Events\IRCMessageCancelEventArgs.cs" />
-    <Compile Include="Events\IRCMessageEventArgs.cs" />
-    <Compile Include="Events\IUserEvent.cs" />
-    <Compile Include="Events\ChannelUserCommandEventArgs.cs" />
-    <Compile Include="Events\MessageCommandEventArgs.cs" />
-    <Compile Include="InputHandler.cs" />
-    <Compile Include="IRCChannel.cs" />
-    <Compile Include="IRCConnection.cs" />
-    <Compile Include="IRCHostmask.cs" />
-    <Compile Include="IRCMessage.cs" />
-    <Compile Include="IRCUser.cs" />
-    <Compile Include="OutputHandler.cs" />
+    <Compile Include="DateTimeUtils.cs" />
+    <Compile Include="GenericOrderedDictionary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SupportHandler.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CsIRC.Utils\CsIRC.Utils.csproj">
-      <Project>{6aa11890-593b-4ce9-ba36-7b4ba1113554}</Project>
-      <Name>CsIRC.Utils</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

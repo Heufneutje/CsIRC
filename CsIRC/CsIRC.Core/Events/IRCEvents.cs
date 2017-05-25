@@ -27,6 +27,16 @@
         /// Event which is fired after a message is sent to the server.
         /// </summary>
         public static event MessageHandler MessageSent;
+
+        /// <summary>
+        /// Event which is fired when a PRIVMSG or NOTICE command is received.
+        /// </summary>
+        public static event MessageCommandHandler MessageCommandReceived;
+
+        /// <summary>
+        /// Event which is fired when a channel is joined.
+        /// </summary>
+        public static event ChannelUserCommandHandler ChannelJoined;
         #endregion
 
         #region Event Invokers
@@ -68,6 +78,26 @@
         public static void OnMessageSent(object sender, IRCMessageEventArgs args)
         {
             MessageSent?.Invoke(sender, args);
+        }
+
+        /// <summary>
+        /// Fires event when a PRIVMSG or NOTICE command is received.
+        /// </summary>
+        /// <param name="sender">The core part or plugin that sent the event.</param>
+        /// <param name="args">The arguments of the event.</param>
+        public static void OnMessageCommandReceived(object sender, MessageCommandEventArgs args)
+        {
+            MessageCommandReceived?.Invoke(sender, args);
+        }
+
+        /// <summary>
+        /// Fires event when a channel is joined.
+        /// </summary>
+        /// <param name="sender">The core part or plugin that sent the event.</param>
+        /// <param name="args">The arguments of the event.</param>
+        public static void OnChannelJoined(object sender, ChannelUserCommandEventArgs args)
+        {
+            ChannelJoined?.Invoke(sender, args);
         }
         #endregion
     }

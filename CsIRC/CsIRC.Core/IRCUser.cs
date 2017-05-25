@@ -13,7 +13,7 @@
         /// <summary>
         /// The user's ident or username.
         /// </summary>
-        public string Usermame { get; set; }
+        public string Username { get; set; }
 
         /// <summary>
         /// The user's hostname.
@@ -46,25 +46,34 @@
         public bool IsAway { get; set; }
 
         /// <summary>
-        /// Creates a new IRC user instance from a hostmask.
-        /// </summary>
-        /// <param name="nickname">The user's nickname.</param>
-        /// <param name="username">The user's ident or username.</param>
-        /// <param name="hostname">The user's hostname.</param>
-        public IRCUser(string nickname, string username, string hostname)
-        {
-            Nickname = nickname;
-            Usermame = username;
-            Hostname = hostname;
-        }
-
-        /// <summary>
-        /// Creates a new IRC user instance from a hostmask.
+        /// Creates a new IRC user instance from a nickname.
         /// </summary>
         /// <param name="nickname">The user's nickname.</param>
         public IRCUser(string nickname)
         {
             Nickname = nickname;
+        }
+
+        /// <summary>
+        /// Creates a new IRC user instance from a hostmask.
+        /// </summary>
+        /// <param name="hostmask">The user's hostmask.</param>
+        public IRCUser(IRCHostmask hostmask)
+        {
+            Nickname = hostmask.Nickname;
+            Username = hostmask.Username;
+            Hostname = hostmask.Hostname;
+        }
+
+        /// <summary>
+        /// Override for string representation.
+        /// </summary>
+        /// <returns>String representation.</returns>
+        public override string ToString()
+        {
+            if (string.IsNullOrEmpty(Username))
+                return Nickname;
+            return $"{Nickname}!{Username}@{Hostname}";
         }
     }
 }
