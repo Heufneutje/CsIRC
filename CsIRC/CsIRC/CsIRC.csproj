@@ -105,6 +105,10 @@
       <Project>{21f6625f-ccf8-4857-9f2f-2c7d704a4789}</Project>
       <Name>CsIRC.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CsIRC.Utils\CsIRC.Utils.csproj">
+      <Project>{6AA11890-593B-4CE9-BA36-7B4BA1113554}</Project>
+      <Name>CsIRC.Utils</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -7,6 +7,13 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="597.531" Width="802.778" Closing="Window_Closing">
     <Grid>
-        <TextBox x:Name="textBox" Margin="10,10,10,10.5" TextWrapping="Wrap" AcceptsReturn="True" FontFamily="Consolas" FontSize="10"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <TextBox x:Name="textBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" TextWrapping="Wrap" AcceptsReturn="True" FontFamily="Consolas" FontSize="10" Grid.Column="0" MinWidth="50"/>
+        <ListBox x:Name="listBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10" Grid.Column="2"/>
+        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" MinWidth="50"/>
     </Grid>
 </Window>

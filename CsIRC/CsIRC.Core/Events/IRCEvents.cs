@@ -37,6 +37,26 @@
         /// Event which is fired when a channel is joined.
         /// </summary>
         public static event ChannelUserCommandHandler ChannelJoined;
+
+        /// <summary>
+        /// Event which is fired when a channel is parted.
+        /// </summary>
+        public static event ChannelUserReasonCommandHandler ChannelParted;
+
+        /// <summary>
+        /// Event which is fired when a user changes nicknames.
+        /// </summary>
+        public static event NickChangedHandler NicknameChanged;
+
+        /// <summary>
+        /// Event which is fired when a channel's topic is changed.
+        /// </summary>
+        public static event TopicChangedHandler TopicChanged;
+
+        /// <summary>
+        /// Event which is fired when a channel's userlist is updated.
+        /// </summary>
+        public static event UserlistUpdatedHandler UserlistUpdated;
         #endregion
 
         #region Event Invokers
@@ -98,6 +118,46 @@
         public static void OnChannelJoined(object sender, ChannelUserCommandEventArgs args)
         {
             ChannelJoined?.Invoke(sender, args);
+        }
+
+        /// <summary>
+        /// Fires event when a channel is parted.
+        /// </summary>
+        /// <param name="sender">The core part or plugin that sent the event.</param>
+        /// <param name="args">The arguments of the event.</param>
+        public static void OnChannelParted(object sender, ChannelUserReasonCommandEventArgs args)
+        {
+            ChannelParted?.Invoke(sender, args);
+        }
+
+        /// <summary>
+        /// Fires event when a user changes nicknames.
+        /// </summary>
+        /// <param name="sender">The core part or plugin that sent the event.</param>
+        /// <param name="args">The arguments of the event.</param>
+        public static void OnNicknameChanged(object sender, NickChangedEventArgs args)
+        {
+            NicknameChanged?.Invoke(sender, args);
+        }
+
+        /// <summary>
+        /// Fires event when a channel's topic is changed.
+        /// </summary>
+        /// <param name="sender">The core part or plugin that sent the event.</param>
+        /// <param name="args">The arguments of the event.</param>
+        public static void OnTopicChanged(object sender, TopicChangedEventArgs args)
+        {
+            TopicChanged?.Invoke(sender, args);
+        }
+
+        /// <summary>
+        /// Fires event when a channel's userlist is updated.
+        /// </summary>
+        /// <param name="sender">The core part or plugin that sent the event.</param>
+        /// <param name="args">The arguments of the event.</param>
+        public static void OnUserlistUpdated(object sender, UserlistUpdatedEventArgs args)
+        {
+            UserlistUpdated?.Invoke(sender, args);
         }
         #endregion
     }

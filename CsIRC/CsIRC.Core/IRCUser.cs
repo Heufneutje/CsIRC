@@ -66,6 +66,15 @@
         }
 
         /// <summary>
+        /// Get the user's hostmask.
+        /// </summary>
+        /// <returns>The user's hostmask.</returns>
+        public IRCHostmask GetHostmask()
+        {
+            return new IRCHostmask(ToString());
+        }
+
+        /// <summary>
         /// Override for string representation.
         /// </summary>
         /// <returns>String representation.</returns>

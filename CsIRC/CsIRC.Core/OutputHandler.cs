@@ -56,6 +56,12 @@ namespace CsIRC.Core
         /// <param name="key">Optional. A password if the channel requires one.</param>
         public void SendJOIN(string channel, string key = null)
         {
+            int maxChannels = _connection.Support.MaxNumberOfChannels;
+            if (maxChannels > 0 && _connection.Channels.Count >= maxChannels)
+                return;
+
+            channel = GetLimitAppliedParameter(channel, _connection.Support.MaxChannelNameLength);
+
             if (!_connection.Support.ChannelTypes.Contains(channel[0]))
                 channel = $"{_connection.Support.ChannelTypes.First()}{channel}";
 
@@ -80,7 +86,30 @@ namespace CsIRC.Core
         /// <param name="nickname">The new nickname.</param>
         public void SendNICK(string nickname)
         {
-            SendRaw("NICK", nickname);
+            SendRaw("NICK", GetLimitAppliedParameter(nickname, _connection.Support.MaxNickLength));
+        }
+
+        /// <summary>
+        /// Leaves a given channel.
+        /// </summary>
+        /// <param name="channel">The channel that should be parted.</param>
+        /// <param name="reason">Optional. The reason for leaving the channel.</param>
+        public void SendPART(IRCChannel channel, string reason = null)
+        {
+            SendPART(channel.Name, reason);
+        }
+
+        /// <summary>
+        /// Leaves a given channel.
+        /// </summary>
+        /// <param name="channel">The channel that should be parted.</param>
+        /// <param name="reason">Optional. The reason for leaving the channel.</param>
+        public void SendPART(string channel, string reason = null)
+        {
+            if (string.IsNullOrEmpty(reason))
+                SendRaw("PART", channel);
+            else
+                SendRaw("PART", channel, reason);
         }
 
         /// <summary>
@@ -153,6 +182,16 @@ namespace CsIRC.Core
         }
 
         /// <summary>
+        /// Sets a channel's topic.
+        /// </summary>
+        /// <param name="channel">The channel in which the topic has to be changed.</param>
+        /// <param name="topic">The new topic.</param>
+        public void SendTOPIC(string channel, string topic)
+        {
+            SendRaw("TOPIC", channel, GetLimitAppliedParameter(topic, _connection.Support.MaxTopicLength));
+        }
+
+        /// <summary>
         /// Logs in on the server.
         /// </summary>
         /// <param name="ident">The ident or username that will be used on the server.</param>
@@ -171,6 +210,13 @@ namespace CsIRC.Core
             SendRaw("WHO", target);
         }
 
+        private string GetLimitAppliedParameter(string param, int maxLength)
+        {
+            if (maxLength > 0 && param.Length > maxLength)
+                param = param.Substring(0, maxLength);
+
+            return param;
+        }
         #region IDisposable Support
         /// <summary>
         /// Disposable pattern implementation.
@@ -195,6 +241,5 @@ namespace CsIRC.Core
             Dispose(true);
         }
         #endregion
-
     }
 }

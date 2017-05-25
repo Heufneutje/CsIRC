@@ -20,8 +20,21 @@ namespace CsIRC
             IRCEvents.MessageReceived += IRCEvents_MessageReceived;
             IRCEvents.MessageSent += IRCEvents_MessageReceived;
             IRCEvents.MessageCommandReceived += IRCEvents_MessageCommandReceived;
+            IRCEvents.UserlistUpdated += IRCEvents_UserlistUpdated;
             _connection.Output.SendNICK("CSIRCTest");
             _connection.Output.SendUSER("Test", "Just Heufy messing around");
+        }
+
+        private void IRCEvents_UserlistUpdated(object sender, UserlistUpdatedEventArgs args)
+        {
+            foreach (IRCUser user in args.UpdatedUsers)
+            {
+                string status = args.Channel.Users[user];
+                if (status.Length > 0)
+                    listBox.Items.Add($"{_connection.Support.StatusModes[status[0]]}{user.Nickname}");
+                else
+                    listBox.Items.Add(user.Nickname);
+            }
         }
 
         private void IRCEvents_MessageCommandReceived(object sender, MessageCommandEventArgs args)

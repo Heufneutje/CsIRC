@@ -21,7 +21,7 @@ namespace CsIRC.Core
         /// <summary>
         /// A dictionary containing all modes currently set in the channel and their parameters.
         /// </summary>
-        public Dictionary<string, string> Modes { get; private set; }
+        public Dictionary<string, object> Modes { get; private set; }
 
         /// <summary>
         /// The channel's current topic.
@@ -56,7 +56,7 @@ namespace CsIRC.Core
         {
             Name = name;
             Users = new Dictionary<IRCUser, string>();
-            Modes = new Dictionary<string, string>();
+            Modes = new Dictionary<string, object>();
             UserlistComplete = true;
         }
 

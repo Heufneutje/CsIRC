@@ -36,6 +36,11 @@ namespace CsIRC.Core
         public bool IsLoggedIn { get; set; }
 
         /// <summary>
+        /// The client's current nicname.
+        /// </summary>
+        public string CurrentNickname { get; set; }
+
+        /// <summary>
         /// A list of all known users on the network that the client shares a channel with.
         /// </summary>
         public List<IRCUser> Users { get; private set; }
@@ -48,7 +53,7 @@ namespace CsIRC.Core
         /// <summary>
         /// The modes set on the current user.
         /// </summary>
-        public Dictionary<string, string> UserModes { get; private set; }
+        public Dictionary<string, object> UserModes { get; private set; }
         #endregion
         
         #region Constructors
@@ -59,7 +64,7 @@ namespace CsIRC.Core
         {
             Users = new List<IRCUser>();
             Channels = new List<IRCChannel>();
-            UserModes = new Dictionary<string, string>();
+            UserModes = new Dictionary<string, object>();
         }
         #endregion
         

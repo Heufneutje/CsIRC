@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CsIRC.Utils;
 
@@ -53,6 +54,41 @@ namespace CsIRC.Core
         /// The supported prefix characters for channels.
         /// </summary>
         public List<char> ChannelTypes { get; private set; }
+
+        /// <summary>
+        /// The maximum length allowed for away messages.
+        /// </summary>
+        public ushort MaxAwayLength { get; private set; }
+
+        /// <summary>
+        /// The maximum length allowed for channel names.
+        /// </summary>
+        public ushort MaxChannelNameLength { get; private set; }
+
+        /// <summary>
+        /// The maximum number of mode changes in a single message.
+        /// </summary>
+        public ushort MaxModeChanges { get; private set; }
+
+        /// <summary>
+        /// The maximum length allowed for nicknames.
+        /// </summary>
+        public ushort MaxNickLength { get; private set; }
+
+        /// <summary>
+        /// The maximum number of channels a user is allowed to join.
+        /// </summary>
+        public ushort MaxNumberOfChannels { get; private set; }
+
+        /// <summary>
+        /// The maximum length allowed for kick reasons.
+        /// </summary>
+        public ushort MaxKickReasonLength { get; private set; }
+
+        /// <summary>
+        /// The maximum length allowed for channel topics.
+        /// </summary>
+        public ushort MaxTopicLength { get; private set; }
 
         /// <summary>
         /// Creates a new handler and initializes it with the basic features defined in RFC1459.
@@ -112,16 +148,34 @@ namespace CsIRC.Core
 
                 switch (tokenKey)
                 {
+                    case "AWAYLEN":
+                        MaxAwayLength = Convert.ToUInt16(tokenValue);
+                        break;
+                    case "CHANMODES":
+                        ParseModeGroups(tokenValue, ChannelModes);
+                        break;
+                    case "CHANNELLEN":
+                        MaxChannelNameLength = Convert.ToUInt16(tokenValue);
+                        break;
                     case "CHANTYPES":
                         ChannelTypes.Clear();
                         foreach (char chanType in tokenValue)
                             ChannelTypes.Add(chanType);
                         break;
-                    case "CHANMODES":
-                        ParseModeGroups(tokenValue, ChannelModes);
+                    case "KICKLEN":
+                        MaxKickReasonLength = Convert.ToUInt16(tokenValue);
+                        break;
+                    case "MAXCHANNELS":
+                        MaxNumberOfChannels = Convert.ToUInt16(tokenValue);
+                        break;
+                    case "MODES":
+                        MaxModeChanges = Convert.ToUInt16(tokenValue);
                         break;
                     case "NETWORK":
                         NetworkName = tokenValue;
+                        break;
+                    case "NICKLEN":
+                        MaxNickLength = Convert.ToUInt16(tokenValue);
                         break;
                     case "PREFIX":
                         StatusModes.Clear();
@@ -134,6 +188,9 @@ namespace CsIRC.Core
                             StatusModes.Add(modes[statusIndex], symbols[statusIndex]);
                             StatusSymbols.Add(symbols[statusIndex], modes[statusIndex]);
                         }
+                        break;
+                    case "TOPICLEN":
+                        MaxTopicLength = Convert.ToUInt16(tokenValue);
                         break;
                     case "USERMODES":
                         ParseModeGroups(tokenValue, UserModes);
