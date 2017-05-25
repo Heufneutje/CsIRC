@@ -31,8 +31,6 @@ namespace CsIRC.Core
                 line = tagSplit[1];
                 tags = ParseTags(tagSplit[0].Substring(1));
             }
-            else
-                tags = new Dictionary<string, string>();
 
             string prefix = null;
             if (line[0] == ':')
