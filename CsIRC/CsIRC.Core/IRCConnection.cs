@@ -9,7 +9,7 @@ namespace CsIRC.Core
         #region Fields & Properties
         private TcpClient _connection;
         private NetworkStream _connectionStream;
-        
+
         /// <summary>
         /// The input handler for this connection.
         /// </summary>
@@ -54,9 +54,11 @@ namespace CsIRC.Core
         /// The modes set on the current user.
         /// </summary>
         public Dictionary<string, object> UserModes { get; private set; }
-        #endregion
-        
+
+        #endregion Fields & Properties
+
         #region Constructors
+
         /// <summary>
         /// Creates a new connection instance.
         /// </summary>
@@ -66,8 +68,9 @@ namespace CsIRC.Core
             Channels = new List<IRCChannel>();
             UserModes = new Dictionary<string, object>();
         }
-        #endregion
-        
+
+        #endregion Constructors
+
         /// <summary>
         /// Connects to an IRC server using a hostname and a port.
         /// </summary>

@@ -217,7 +217,9 @@ namespace CsIRC.Core
 
             return param;
         }
+
         #region IDisposable Support
+
         /// <summary>
         /// Disposable pattern implementation.
         /// </summary>
@@ -240,6 +242,7 @@ namespace CsIRC.Core
         {
             Dispose(true);
         }
-        #endregion
+
+        #endregion IDisposable Support
     }
 }

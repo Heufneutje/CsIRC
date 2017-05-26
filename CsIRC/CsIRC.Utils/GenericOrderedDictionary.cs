@@ -1,10 +1,10 @@
 ﻿// Based on https://stackoverflow.com/questions/2629027/no-generic-implementation-of-ordereddictionary
 // http://unlicense.org
 using System;
-using System.Collections.ObjectModel;
 using System.Collections;
-using System.Collections.Specialized;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 
 namespace CsIRC.Utils
@@ -16,20 +16,35 @@ namespace CsIRC.Utils
         new int Count { get; }
         new ICollection<TKey> Keys { get; }
         new ICollection<TValue> Values { get; }
+
         new void Add(TKey key, TValue value);
+
         new void Clear();
+
         void Insert(int index, TKey key, TValue value);
+
         int IndexOf(TKey key);
+
         bool ContainsValue(TValue value);
+
         bool ContainsValue(TValue value, IEqualityComparer<TValue> comparer);
+
         new bool ContainsKey(TKey key);
+
         new IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator();
+
         new bool Remove(TKey key);
+
         new void RemoveAt(int index);
+
         new bool TryGetValue(TKey key, out TValue value);
+
         TValue GetValue(TKey key);
+
         void SetValue(TKey key, TValue value);
+
         KeyValuePair<TKey, TValue> GetItem(int index);
+
         void SetItem(int index, TValue value);
     }
 
@@ -102,7 +117,7 @@ namespace CsIRC.Utils
 
         public IEqualityComparer<TKey> Comparer { get; private set; }
 
-        #endregion
+        #endregion Fields/Properties
 
         #region Constructors
 
@@ -130,7 +145,7 @@ namespace CsIRC.Utils
                 _keyedCollection.Add(pair);
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Methods
 
@@ -266,9 +281,10 @@ namespace CsIRC.Utils
             }
         }
 
-        #endregion
+        #endregion Methods
 
         #region sorting
+
         public void SortKeys()
         {
             _keyedCollection.SortByKeys();
@@ -299,7 +315,8 @@ namespace CsIRC.Utils
         {
             _keyedCollection.Sort((x, y) => comparison(x.Value, y.Value));
         }
-        #endregion
+
+        #endregion sorting
 
         #region IDictionary<TKey, TValue>
 
@@ -348,7 +365,7 @@ namespace CsIRC.Utils
             }
         }
 
-        #endregion
+        #endregion IDictionary<TKey, TValue>
 
         #region ICollection<KeyValuePair<TKey, TValue>>
 
@@ -393,7 +410,7 @@ namespace CsIRC.Utils
             return _keyedCollection.Remove(item);
         }
 
-        #endregion
+        #endregion ICollection<KeyValuePair<TKey, TValue>>
 
         #region IEnumerable<KeyValuePair<TKey, TValue>>
 
@@ -402,7 +419,7 @@ namespace CsIRC.Utils
             return GetEnumerator();
         }
 
-        #endregion
+        #endregion IEnumerable<KeyValuePair<TKey, TValue>>
 
         #region IEnumerable
 
@@ -411,7 +428,7 @@ namespace CsIRC.Utils
             return GetEnumerator();
         }
 
-        #endregion
+        #endregion IEnumerable
 
         #region IOrderedDictionary
 
@@ -442,7 +459,7 @@ namespace CsIRC.Utils
             }
         }
 
-        #endregion
+        #endregion IOrderedDictionary
 
         #region IDictionary
 
@@ -515,7 +532,7 @@ namespace CsIRC.Utils
             }
         }
 
-        #endregion
+        #endregion IDictionary
 
         #region ICollection
 
@@ -548,7 +565,7 @@ namespace CsIRC.Utils
             }
         }
 
-        #endregion
+        #endregion ICollection
     }
 
     public class KeyedCollection2<TKey, TItem> : KeyedCollection<TKey, TItem>
@@ -622,7 +639,7 @@ namespace CsIRC.Utils
             _compareFunction = comparison ?? throw new ArgumentNullException("comparison");
         }
 
-        #endregion
+        #endregion Constructors
 
         public override int Compare(T arg1, T arg2)
         {

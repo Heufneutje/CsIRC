@@ -6,6 +6,7 @@
     public static class IRCEvents
     {
         #region Events
+
         /// <summary>
         /// Event which is fired after a message is received from the server and before the message has been parsed by the client.
         /// Cancelling this event will prevent the client from parsing it, allowing for custom handling logic.
@@ -57,9 +58,11 @@
         /// Event which is fired when a channel's userlist is updated.
         /// </summary>
         public static event UserlistUpdatedHandler UserlistUpdated;
-        #endregion
+
+        #endregion Events
 
         #region Event Invokers
+
         /// <summary>
         /// Fires event after a message is received from the server and before the message has been parsed by the client.
         /// </summary>
@@ -159,6 +162,7 @@
         {
             UserlistUpdated?.Invoke(sender, args);
         }
-        #endregion
+
+        #endregion Event Invokers
     }
 }
