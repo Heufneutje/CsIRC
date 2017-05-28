@@ -63,6 +63,8 @@
     <Compile Include="IRCHostmask.cs" />
     <Compile Include="IRCMessage.cs" />
     <Compile Include="IRCUser.cs" />
+    <Compile Include="ModeChange.cs" />
+    <Compile Include="ModeString.cs" />
     <Compile Include="OutputHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SupportHandler.cs" />

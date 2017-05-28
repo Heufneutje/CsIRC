@@ -100,7 +100,7 @@ namespace CsIRC.Core
                         _connection.Output.SendMODE(target);
                     }
                     if (!channel.Users.ContainsKey(user))
-                        channel.Users.Add(user, string.Empty);
+                        channel.Users.Add(user, new List<char>());
                     IRCEvents.OnChannelJoined(this, new ChannelUserCommandEventArgs(message, channel, user));
                     break;
                 case "NICK":
@@ -110,6 +110,20 @@ namespace CsIRC.Core
                     if (user.Nickname == _connection.CurrentNickname)
                         _connection.CurrentNickname = newNick;
                     IRCEvents.OnNicknameChanged(this, new NickChangedEventArgs(message, user, oldNick, newNick));
+                    break;
+                case "MODE":
+                    List<string> modeParams = new List<string>();
+                    target = message.Parameters.First();
+                    if (message.Parameters.Count > 2)
+                        modeParams = message.Parameters.Skip(2).ToList();
+                    if (_connection.Support.ChannelTypes.Contains(target[0]))
+                    {
+                        channel = _connection.Channels.FirstOrDefault(x => x.Name == target);
+                        if (channel != null)
+                            channel.SetModes(new ModeString(message.Parameters[1], modeParams, _connection.Support.ChannelModes, _connection.Support.StatusModes.Keys.ToList()));
+                    }
+                    else if (target == _connection.CurrentNickname)
+                        _connection.SetUserModes(new ModeString(message.Parameters[1], modeParams, _connection.Support.UserModes, null));
                     break;
                 case "NOTICE":
                 case "PRIVMSG":
@@ -192,6 +206,13 @@ namespace CsIRC.Core
                 case "005": // RPL_ISUPPORT
                     _connection.Support.ParseTokens(message.Parameters);
                     break;
+                case "324":
+                    channel = _connection.Channels.FirstOrDefault(x => x.Name == message.Parameters[1]);
+                    List<string> modeParams = new List<string>();
+                    if (message.Parameters.Count > 3)
+                        modeParams = message.Parameters[3].Split(' ').ToList();
+                    channel.SetModes(new ModeString(message.Parameters[2], modeParams, _connection.Support.ChannelModes, _connection.Support.StatusModes.Keys.ToList()));
+                    break;
                 case "329": // RPL_CREATIONTIME
                     channel = _connection.Channels.FirstOrDefault(x => x.Name == message.Parameters[1]);
                     if (channel != null)
@@ -229,9 +250,9 @@ namespace CsIRC.Core
                     channel = _connection.Channels.FirstOrDefault(x => x.Name == message.Parameters[1]);
                     if (channel != null && channel.Users.ContainsKey(whoUser))
                     {
-                        channel.Users[whoUser] = string.Empty;
+                        channel.Users[whoUser] = new List<char>();
                         foreach (char symbolChar in flags)
-                            channel.Users[whoUser] += _connection.Support.StatusSymbols[symbolChar];
+                            channel.Users[whoUser].Add(_connection.Support.StatusSymbols[symbolChar]);
                     }
                     string[] hopsGecos = message.Parameters[7].Split(' ');
                     whoUser.Hops = Convert.ToUInt32(hopsGecos[0]);
@@ -249,10 +270,10 @@ namespace CsIRC.Core
                     }
                     foreach (IRCHostmask prefix in message.Parameters[3].Split(' ').Select(x => new IRCHostmask(x)))
                     {
-                        string ranks = string.Empty;
+                        List<char> ranks = new List<char>();
                         while (_connection.Support.StatusSymbols.ContainsKey(prefix.Nickname[0]))
                         {
-                            ranks += _connection.Support.StatusSymbols[prefix.Nickname[0]];
+                            ranks.Add(_connection.Support.StatusSymbols[prefix.Nickname[0]]);
                             prefix.Nickname = prefix.Nickname.Substring(1);
                         }
                         IRCUser user = _connection.Users.FirstOrDefault(x => x.Nickname == prefix.Nickname);

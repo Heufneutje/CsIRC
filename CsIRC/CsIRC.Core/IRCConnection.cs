@@ -53,7 +53,7 @@ namespace CsIRC.Core
         /// <summary>
         /// The modes set on the current user.
         /// </summary>
-        public Dictionary<string, object> UserModes { get; private set; }
+        public Dictionary<char, object> UserModes { get; private set; }
 
         #endregion Fields & Properties
 
@@ -66,7 +66,7 @@ namespace CsIRC.Core
         {
             Users = new List<IRCUser>();
             Channels = new List<IRCChannel>();
-            UserModes = new Dictionary<string, object>();
+            UserModes = new Dictionary<char, object>();
         }
 
         #endregion Constructors
@@ -106,6 +106,11 @@ namespace CsIRC.Core
             _connection.Close();
 
             IsConnected = false;
+        }
+
+        public void SetUserModes(ModeString modeString)
+        {
+            modeString.ApplyModeChanges(UserModes);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CsIRC.Core.Events;
@@ -10,9 +11,9 @@ namespace CsIRC.Core
     /// </summary>
     public class OutputHandler : IDisposable
     {
-        private StreamWriter _outputStream;
         private IRCConnection _connection;
         private bool _disposedValue; // IDisposable support. To detect redundant calls.
+        private StreamWriter _outputStream;
 
         /// <summary>
         /// Creates a new handler.
@@ -23,30 +24,6 @@ namespace CsIRC.Core
             _outputStream = outputStream;
             _outputStream.AutoFlush = true;
             _connection = connection;
-        }
-
-        /// <summary>
-        /// Sends a raw IRC line to the server.
-        /// </summary>
-        /// <param name="parameters">The parts of the message that will be sent. A space will automatically be inserted between these parameters.</param>
-        public void SendRaw(params string[] parameters)
-        {
-            if (!parameters.Any())
-                return;
-
-            string lastParam = parameters.Last();
-            if (lastParam.Contains(' '))
-                parameters[parameters.Length - 1] = $":{lastParam}";
-
-            string lineToSend = string.Join(" ", parameters);
-            IRCMessage message = new IRCMessage(lineToSend);
-            IRCMessageCancelEventArgs args = new IRCMessageCancelEventArgs(message);
-            IRCEvents.OnMessageSending(this, args);
-            if (args.Cancel)
-                return;
-
-            _outputStream.Write($"{lineToSend}\r\n");
-            IRCEvents.OnMessageSent(this, new IRCMessageEventArgs(message));
         }
 
         /// <summary>
@@ -78,6 +55,56 @@ namespace CsIRC.Core
         public void SendMODE(string channel)
         {
             SendRaw("MODE", channel);
+        }
+
+        /// <summary>
+        /// Sets modes on a giver user or channel.
+        /// </summary>
+        /// <param name="target">The user or channel that will have its modes changed.</param>
+        /// <param name="modeString">The mode changes that are made.</param>
+        public void SendMODE(string target, ModeString modeString)
+        {
+            foreach (ModeString modeStr in modeString.Split(_connection.Support.MaxModeChanges))
+                SendRaw("MODE", target, modeStr.ToString());
+        }
+
+        /// <summary>
+        /// Sets modes on a given channel.
+        /// </summary>
+        /// <param name="channel">The channel that will have its modes changed.</param>
+        /// <param name="modes">The modes that will be changed.</param>
+        /// <param name="parameters">The parameters that are needed for the changed modes.</param>
+        public void SendMODE(IRCChannel channel, string modes, List<string> parameters)
+        {
+            SendMODE(channel.Name, modes, parameters, MessageTarget.Channel);
+        }
+
+        /// <summary>
+        /// Sets modes on a giver user.
+        /// </summary>
+        /// <param name="user">The user that will have their modes changed.</param>
+        /// <param name="modes">The modes that will be changed.</param>
+        /// <param name="parameters">The parameters that are needed for the changed modes.</param>
+        public void SendMODE(IRCUser user, string modes, List<string> parameters)
+        {
+            SendMODE(user.Nickname, modes, parameters, MessageTarget.User);
+        }
+
+        /// <summary>
+        /// Sets modes on a giver user or channel.
+        /// </summary>
+        /// <param name="target">The user or channel that will have its modes changed</param>
+        /// <param name="modes">The modes that will be changed.</param>
+        /// <param name="parameters">The parameters that are needed for the changed modes.</param>
+        /// <param name="targetType">Whether the change is targetting a user or a channel.</param>
+        public void SendMODE(string target, string modes, List<string> parameters, MessageTarget targetType)
+        {
+            ModeString modeString;
+            if (targetType == MessageTarget.Channel)
+                modeString = new ModeString(modes, parameters, _connection.Support.ChannelModes, _connection.Support.StatusModes.Keys.ToList());
+            else
+                modeString = new ModeString(modes, parameters, _connection.Support.UserModes, null);
+            SendMODE(target, modeString);
         }
 
         /// <summary>
@@ -182,6 +209,30 @@ namespace CsIRC.Core
         }
 
         /// <summary>
+        /// Sends a raw IRC line to the server.
+        /// </summary>
+        /// <param name="parameters">The parts of the message that will be sent. A space will automatically be inserted between these parameters.</param>
+        public void SendRaw(params string[] parameters)
+        {
+            if (!parameters.Any())
+                return;
+
+            string lastParam = parameters.Last();
+            if (lastParam.Contains(' '))
+                parameters[parameters.Length - 1] = $":{lastParam}";
+
+            string lineToSend = string.Join(" ", parameters);
+            IRCMessage message = new IRCMessage(lineToSend);
+            IRCMessageCancelEventArgs args = new IRCMessageCancelEventArgs(message);
+            IRCEvents.OnMessageSending(this, args);
+            if (args.Cancel)
+                return;
+
+            _outputStream.Write($"{lineToSend}\r\n");
+            IRCEvents.OnMessageSent(this, new IRCMessageEventArgs(message));
+        }
+
+        /// <summary>
         /// Sets a channel's topic.
         /// </summary>
         /// <param name="channel">The channel in which the topic has to be changed.</param>
@@ -223,6 +274,14 @@ namespace CsIRC.Core
         /// <summary>
         /// Disposable pattern implementation.
         /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        /// <summary>
+        /// Disposable pattern implementation.
+        /// </summary>
         /// <param name="disposing">Should dispose Y/N?</param>
         protected virtual void Dispose(bool disposing)
         {
@@ -233,14 +292,6 @@ namespace CsIRC.Core
 
                 _disposedValue = true;
             }
-        }
-
-        /// <summary>
-        /// Disposable pattern implementation.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
         }
 
         #endregion IDisposable Support

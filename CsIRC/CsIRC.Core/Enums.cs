@@ -11,7 +11,8 @@
         List = 0,
         ParamUnset = 1,
         ParamSet = 2,
-        NoParam = 3
+        NoParam = 3,
+        Status = 4
     }
 
     public enum MessageCommandType

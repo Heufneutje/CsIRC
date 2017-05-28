@@ -16,12 +16,12 @@ namespace CsIRC.Core
         /// <summary>
         /// A dictionary that maps IRC users to their nickname.
         /// </summary>
-        public Dictionary<IRCUser, string> Users { get; private set; }
+        public Dictionary<IRCUser, List<char>> Users { get; private set; }
 
         /// <summary>
         /// A dictionary containing all modes currently set in the channel and their parameters.
         /// </summary>
-        public Dictionary<string, object> Modes { get; private set; }
+        public Dictionary<char, object> Modes { get; private set; }
 
         /// <summary>
         /// The channel's current topic.
@@ -55,9 +55,15 @@ namespace CsIRC.Core
         public IRCChannel(string name)
         {
             Name = name;
-            Users = new Dictionary<IRCUser, string>();
-            Modes = new Dictionary<string, object>();
+            Users = new Dictionary<IRCUser, List<char>>();
+            Modes = new Dictionary<char, object>();
             UserlistComplete = true;
+        }
+
+        public void SetModes(ModeString modeString)
+        {
+            modeString.ApplyModeChanges(Modes);
+            modeString.ApplyStatusChanges(Users);
         }
 
         /// <summary>
