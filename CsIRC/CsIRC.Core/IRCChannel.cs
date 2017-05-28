@@ -60,6 +60,10 @@ namespace CsIRC.Core
             UserlistComplete = true;
         }
 
+        /// <summary>
+        /// Perform a mode change on this channel. Should only be called after intructed by the server.
+        /// </summary>
+        /// <param name="modeString">The modes that will be changed.</param>
         public void SetModes(ModeString modeString)
         {
             modeString.ApplyModeChanges(Modes);

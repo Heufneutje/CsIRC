@@ -39,5 +39,14 @@
             IsAdding = isAdding;
             ModeType = modeType;
         }
+
+        /// <summary>
+        /// Override for string representation.
+        /// </summary>
+        /// <returns>String representation.</returns>
+        public override string ToString()
+        {
+            return $"{(IsAdding ? "+" : "-")}{Mode} {Parameter}".TrimEnd();
+        }
     }
 }

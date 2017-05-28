@@ -4,15 +4,31 @@ using CsIRC.Utils;
 
 namespace CsIRC.Core
 {
+    /// <summary>
+    /// A representation of different mode change combined in a single string.
+    /// </summary>
     public class ModeString
     {
+        /// <summary>
+        /// The modes that have been added and removed.
+        /// </summary>
         public List<ModeChange> ModesChanged { get; private set; }
 
+        /// <summary>
+        /// Creates a blank mode string.
+        /// </summary>
         public ModeString()
         {
             ModesChanged = new List<ModeChange>();
         }
 
+        /// <summary>
+        /// Creates a mode string from modes and the parameters they take.
+        /// </summary>
+        /// <param name="modes">The modes that are to be changed.</param>
+        /// <param name="parameters">The parameters that the modes take.</param>
+        /// <param name="supportedModes">The modes that the server supports depending on the target.</param>
+        /// <param name="supportedStatuses">The channel statuses that the server supports.</param>
         public ModeString(string modes, List<string> parameters, Dictionary<char, ModeType> supportedModes, List<char> supportedStatuses)
         {
             ModesChanged = new List<ModeChange>();
@@ -58,8 +74,16 @@ namespace CsIRC.Core
             }
         }
 
+        /// <summary>
+        /// Split the mode string into multiple mode strings based on the maximum number of changes that's allowed within a single message.
+        /// </summary>
+        /// <param name="maxModes">The maximum number of mode changes as provided by the server.</param>
+        /// <returns>A list of mode strings splitted by the maximum number of mode changes.</returns>
         public List<ModeString> Split(int maxModes)
         {
+            if (maxModes <= 0)
+                return new List<ModeString>() { this };
+
             List<ModeString> modeStrings = new List<ModeString>();
             ModeString current = null;
             foreach (ModeChange change in ModesChanged)
@@ -75,6 +99,10 @@ namespace CsIRC.Core
             return modeStrings;
         }
 
+        /// <summary>
+        /// Apply the mode changes in this mode string to a given dictionary of modes.
+        /// </summary>
+        /// <param name="currentModes">The given dictionary of user or channel modes.</param>
         public void ApplyModeChanges(Dictionary<char, object> currentModes)
         {
             foreach (ModeChange change in ModesChanged.Where(x => x.ModeType != ModeType.Status))
@@ -108,6 +136,10 @@ namespace CsIRC.Core
             }
         }
 
+        /// <summary>
+        /// Apply the status changes in this mode string to a given dictionary of channel users.
+        /// </summary>
+        /// <param name="currentStatuses">The given dictionary of channel users.</param>
         public void ApplyStatusChanges(Dictionary<IRCUser, List<char>> currentStatuses)
         {
             foreach (ModeChange change in ModesChanged.Where(x => x.ModeType == ModeType.Status))
@@ -123,6 +155,10 @@ namespace CsIRC.Core
             }
         }
 
+        /// <summary>
+        /// Override for string representation.
+        /// </summary>
+        /// <returns>String representation.</returns>
         public override string ToString()
         {
             bool isAdding = false;
@@ -145,7 +181,7 @@ namespace CsIRC.Core
                 if (change.Parameter != null)
                     parameters.Add(change.Parameter);
             }
-            return $"{modes} {string.Join(" ", parameters)}";
+            return $"{modes} {string.Join(" ", parameters)}".TrimEnd();
         }
     }
 }
