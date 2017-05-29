@@ -55,4 +55,18 @@
     /// <param name="sender">The core part or plugin that sent the event.</param>
     /// <param name="args">The arguments of the event.</param>
     public delegate void UserlistUpdatedHandler(object sender, UserlistUpdatedEventArgs args);
+
+    /// <summary>
+    /// Handler for events where the modes on a user or channel are changed.
+    /// </summary>
+    /// <param name="sender">The core part or plugin that sent the event.</param>
+    /// <param name="args">The arguments of the event.</param>
+    public delegate void ModesChangedHandler(object sender, ModesChangedEventArgs args);
+
+    /// <summary>
+    /// Handler for events that apply to a user with a reason.
+    /// </summary>
+    /// <param name="sender">The core part or plugin that sent the event.</param>
+    /// <param name="args">The arguments of the event.</param>
+    public delegate void UserReasonCommandHandler(object sender, UserCommandReasonEventArgs args);
 }

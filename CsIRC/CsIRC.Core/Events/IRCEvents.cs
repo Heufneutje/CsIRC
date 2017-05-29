@@ -59,6 +59,16 @@
         /// </summary>
         public static event UserlistUpdatedHandler UserlistUpdated;
 
+        /// <summary>
+        /// Event which is fired when a channel's or user's modes are changed.
+        /// </summary>
+        public static event ModesChangedHandler ModesChanged;
+
+        /// <summary>
+        /// Event which is fired when a user leaves the server.
+        /// </summary>
+        public static event UserReasonCommandHandler UserQuit;
+
         #endregion Events
 
         #region Event Invokers
@@ -161,6 +171,26 @@
         public static void OnUserlistUpdated(object sender, UserlistUpdatedEventArgs args)
         {
             UserlistUpdated?.Invoke(sender, args);
+        }
+
+        /// <summary>
+        /// Fires event which is fired when a channel's or user's modes are changed.
+        /// </summary>
+        /// <param name="sender">The core part or plugin that sent the event.</param>
+        /// <param name="args">The arguments of the event.</param>
+        public static void OnModesChanged(object sender, ModesChangedEventArgs args)
+        {
+            ModesChanged?.Invoke(sender, args);
+        }
+
+        /// <summary>
+        /// Fires event which is fired when a user leaves the server.
+        /// </summary>
+        /// <param name="sender">The core part or plugin that sent the event.</param>
+        /// <param name="args">The arguments of the event.</param>
+        public static void OnUserQuit(object sender, UserCommandReasonEventArgs args)
+        {
+            UserQuit.Invoke(sender, args);
         }
 
         #endregion Event Invokers

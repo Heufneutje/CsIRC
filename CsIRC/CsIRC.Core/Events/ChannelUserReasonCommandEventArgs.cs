@@ -6,7 +6,7 @@
     public class ChannelUserReasonCommandEventArgs : ChannelUserCommandEventArgs
     {
         /// <summary>
-        /// The reason for parting the channel.
+        /// The optional reason for the event.
         /// </summary>
         public string Reason { get; private set; }
 

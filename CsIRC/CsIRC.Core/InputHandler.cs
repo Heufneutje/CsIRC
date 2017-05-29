@@ -116,14 +116,23 @@ namespace CsIRC.Core
                     target = message.Parameters.First();
                     if (message.Parameters.Count > 2)
                         modeParams = message.Parameters.Skip(2).ToList();
+                    ModeString modeString;
                     if (_connection.Support.ChannelTypes.Contains(target[0]))
                     {
                         channel = _connection.Channels.FirstOrDefault(x => x.Name == target);
                         if (channel != null)
-                            channel.SetModes(new ModeString(message.Parameters[1], modeParams, _connection.Support.ChannelModes, _connection.Support.StatusModes.Keys.ToList()));
+                        {
+                            modeString = new ModeString(message.Parameters[1], modeParams, _connection.Support.ChannelModes, _connection.Support.StatusModes.Keys.ToList());
+                            channel.SetModes(modeString);
+                            IRCEvents.OnModesChanged(this, new ModesChangedEventArgs(message, channel, modeString));
+                        }
                     }
                     else if (target == _connection.CurrentNickname)
-                        _connection.SetUserModes(new ModeString(message.Parameters[1], modeParams, _connection.Support.UserModes, null));
+                    {
+                        modeString = new ModeString(message.Parameters[1], modeParams, _connection.Support.UserModes, null);
+                        _connection.SetUserModes(modeString);
+                        IRCEvents.OnModesChanged(this, new ModesChangedEventArgs(message, user, modeString));
+                    }
                     break;
                 case "NOTICE":
                 case "PRIVMSG":
@@ -169,6 +178,18 @@ namespace CsIRC.Core
                 case "PING":
                     _connection.Output.SendPONG(message.Parameters.First());
                     break;
+                case "QUIT":
+                    if (user == null)
+                        return;
+
+                    string quitReason = null;
+                    if (message.Parameters.Any())
+                        quitReason = message.Parameters.First();
+                    _connection.Users.Remove(user);
+                    foreach (IRCChannel chan in _connection.Channels.Where(x => x.Users.ContainsKey(user)))
+                        chan.Users.Remove(user);
+                    IRCEvents.OnUserQuit(this, new UserCommandReasonEventArgs(message, user, quitReason));
+                    break;
                 case "TOPIC":
                     channel = _connection.Channels.FirstOrDefault(x => x.Name == message.Parameters.First());
                     if (channel == null)
@@ -206,12 +227,14 @@ namespace CsIRC.Core
                 case "005": // RPL_ISUPPORT
                     _connection.Support.ParseTokens(message.Parameters);
                     break;
-                case "324":
+                case "324": // RPL_CHANNELMODEIS
                     channel = _connection.Channels.FirstOrDefault(x => x.Name == message.Parameters[1]);
                     List<string> modeParams = new List<string>();
                     if (message.Parameters.Count > 3)
                         modeParams = message.Parameters[3].Split(' ').ToList();
-                    channel.SetModes(new ModeString(message.Parameters[2], modeParams, _connection.Support.ChannelModes, _connection.Support.StatusModes.Keys.ToList()));
+                    ModeString modeString = new ModeString(message.Parameters[2], modeParams, _connection.Support.ChannelModes, _connection.Support.StatusModes.Keys.ToList());
+                    channel.SetModes(modeString);
+                    IRCEvents.OnModesChanged(this, new ModesChangedEventArgs(message, channel, modeString));
                     break;
                 case "329": // RPL_CREATIONTIME
                     channel = _connection.Channels.FirstOrDefault(x => x.Name == message.Parameters[1]);

@@ -14,7 +14,7 @@ namespace CsIRC.Core
         public string Name { get; private set; }
 
         /// <summary>
-        /// A dictionary that maps IRC users to their nickname.
+        /// A dictionary that maps IRC users to their status in the channel.
         /// </summary>
         public Dictionary<IRCUser, List<char>> Users { get; private set; }
 
