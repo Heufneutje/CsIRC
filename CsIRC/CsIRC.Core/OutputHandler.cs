@@ -27,6 +27,65 @@ namespace CsIRC.Core
         }
 
         /// <summary>
+        /// Requests admin information for the server.
+        /// </summary>
+        /// <param name="server">Optional. The server to request information for. Requests information for the current server if this parameter is not defined.</param>
+        public void SendADMIN(string server = null)
+        {
+            if (string.IsNullOrEmpty(server))
+                SendRaw("ADMIN");
+            else
+                SendRaw("ADMIN", server);
+        }
+
+        /// <summary>
+        /// Sets or clears the client's AWAY status.
+        /// </summary>
+        /// <param name="reason">Optional. Define to set the AWAY status and leave blank to clear it.</param>
+        public void SendAWAY(string reason = null)
+        {
+            if (string.IsNullOrEmpty(reason))
+                SendRaw("AWAY");
+            else
+                SendRaw("AWAY", GetLimitAppliedParameter(reason, _connection.Support.MaxAwayLength));
+        }
+
+        /// <summary>
+        /// Sends oper command which connects the current server to another server on the network.
+        /// </summary>
+        /// <param name="server">The server to connect the current server to.</param>
+        public void SendCONNECT(string server)
+        {
+            SendRaw("CONNECT", server);
+        }
+
+        /// <summary>
+        /// Requests information about the IRC daemon that the current server is running on.
+        /// </summary>
+        public void SendINFO()
+        {
+            SendRaw("INFO");
+        }
+
+        /// <summary>
+        /// Checks whether a list of users is online.
+        /// </summary>
+        /// <param name="nicknames">The users to check.</param>
+        public void SendISON(List<string> nicknames)
+        {
+            SendRaw("ISON", string.Join(" ", nicknames));
+        }
+
+        /// <summary>
+        /// Checks whether a nuser is online.
+        /// </summary>
+        /// <param name="nickname">The user to check.</param>
+        public void SendISON(string nickname)
+        {
+            SendISON(new List<string>() { nickname });
+        }
+
+        /// <summary>
         /// Invites a user into a given channel.
         /// </summary>
         /// <param name="channel">The channel to invite the user into.</param>
