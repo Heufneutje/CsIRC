@@ -84,6 +84,17 @@ namespace CsIRC.Core
 
             switch (message.Command)
             {
+                case "INVITE":
+                    if (user == null)
+                        user = new IRCUser(prefix);
+
+                    target = message.Parameters.First();
+                    channel = _connection.Channels.FirstOrDefault(x => x.Name == target);
+                    if (channel == null)
+                        channel = new IRCChannel(target);
+
+                    IRCEvents.OnInvitedIntoChannel(this, new ChannelUserCommandEventArgs(message, channel, user));
+                    break;
                 case "JOIN":
                     if (user == null)
                     {

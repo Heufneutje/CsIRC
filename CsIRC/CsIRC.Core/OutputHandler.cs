@@ -27,6 +27,36 @@ namespace CsIRC.Core
         }
 
         /// <summary>
+        /// Invites a user into a given channel.
+        /// </summary>
+        /// <param name="channel">The channel to invite the user into.</param>
+        /// <param name="user">The user to invite.</param>
+        public void SendINVITE(IRCChannel channel, IRCUser user)
+        {
+            SendINVITE(channel.Name, user.Nickname);
+        }
+
+        /// <summary>
+        /// Invites a user into a given channel.
+        /// </summary>
+        /// <param name="channel">The channel to invite the user into.</param>
+        /// <param name="nickname">The nickname of the user to invite.</param>
+        public void SendINVITE(IRCChannel channel, string nickname)
+        {
+            SendINVITE(channel.Name, nickname);
+        }
+
+        /// <summary>
+        /// Invites a user into a given channel.
+        /// </summary>
+        /// <param name="channel">The channel to invite the user into.</param>
+        /// <param name="nickname">The nickname of the user to invite.</param>
+        public void SendINVITE(string channel, string nickname)
+        {
+            SendRaw("INVITE", nickname, channel);
+        }
+
+        /// <summary>
         /// Joins a given channel.
         /// </summary>
         /// <param name="channel">The channel that will be joined.</param>

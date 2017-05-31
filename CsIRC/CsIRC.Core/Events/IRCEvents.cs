@@ -60,6 +60,11 @@
         public static event UserlistUpdatedHandler UserlistUpdated;
 
         /// <summary>
+        /// Event which is fired when the client is invited into a channel.
+        /// </summary>
+        public static event ChannelUserCommandHandler InvitedIntoChannel;
+
+        /// <summary>
         /// Event which is fired when a channel's or user's modes are changed.
         /// </summary>
         public static event ModesChangedHandler ModesChanged;
@@ -171,6 +176,16 @@
         public static void OnUserlistUpdated(object sender, UserlistUpdatedEventArgs args)
         {
             UserlistUpdated?.Invoke(sender, args);
+        }
+
+        /// <summary>
+        /// Fires event when the client is invited into a channel.
+        /// </summary>
+        /// <param name="sender">The core part or plugin that sent the event.</param>
+        /// <param name="args">The arguments of the event.</param>
+        public static void OnInvitedIntoChannel(object sender, ChannelUserCommandEventArgs args)
+        {
+            InvitedIntoChannel?.Invoke(sender, args);
         }
 
         /// <summary>
