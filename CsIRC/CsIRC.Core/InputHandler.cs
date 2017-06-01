@@ -218,7 +218,7 @@ namespace CsIRC.Core
                     _connection.Users.Remove(user);
                     foreach (IRCChannel chan in _connection.Channels.Where(x => x.Users.ContainsKey(user)))
                         chan.Users.Remove(user);
-                    IRCEvents.OnUserQuit(this, new UserCommandReasonEventArgs(message, user, quitReason));
+                    IRCEvents.OnUserQuit(this, new UserReasonCommandEventArgs(message, user, quitReason));
                     break;
                 case "TOPIC":
                     channel = _connection.GetChannelByName(message.Parameters.First());
@@ -231,6 +231,9 @@ namespace CsIRC.Core
                     channel.TopicSetDate = DateTime.Now;
                     channel.TopicSetter = user.GetHostmask();
                     IRCEvents.OnTopicChanged(this, new TopicChangedEventArgs(message, channel, user, oldTopic, newTopic));
+                    break;
+                default:
+                    _connection.Capability.HandleCapabilityCommand(message);
                     break;
             }
         }
@@ -346,6 +349,9 @@ namespace CsIRC.Core
                     channel = _connection.GetChannelByName(message.Parameters[1]);
                     if (channel != null)
                         channel.UserlistComplete = true;
+                    break;
+                default:
+                    _connection.Capability.HandleCapabilityNumeric(message);
                     break;
             }
         }

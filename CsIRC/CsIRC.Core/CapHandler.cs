@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CsIRC.Core.Events;
 
 namespace CsIRC.Core
 {
@@ -36,6 +37,7 @@ namespace CsIRC.Core
             EnabledCapabilities = new List<string>();
 
             RequestedCapabilities = new List<string>();
+            RequestedCapabilities.Add("away-notify");
             RequestedCapabilities.Add("multi-prefix");
             RequestedCapabilities.Add("userhost-in-names");
         }
@@ -84,6 +86,10 @@ namespace CsIRC.Core
                 _connection.Output.SendRaw("CAP", "END");
         }
 
+        /// <summary>
+        /// Handle a CAP subcommand.
+        /// </summary>
+        /// <param name="message">The message that contains the command.</param>
         public void HandleCapReply(IRCMessage message)
         {
             switch (message.Parameters[1])
@@ -111,6 +117,40 @@ namespace CsIRC.Core
                     CheckNegotiationCompleted();
                     break;
             }
+        }
+
+        /// <summary>
+        /// Try to handle an unknown command as a CAP command.
+        /// </summary>
+        /// <param name="message">The message that contains the command.</param>
+        public void HandleCapabilityCommand(IRCMessage message)
+        {
+            IRCHostmask prefix = new IRCHostmask(message.Prefix);
+            IRCUser user = _connection.GetUserByPrefix(prefix);
+            switch (message.Command)
+            {
+                case "AWAY":
+                    if (message.Parameters.Any())
+                    {
+                        user.IsAway = true;
+                        user.AwayMessage = message.Parameters.First();
+                    }
+                    else
+                    {
+                        user.IsAway = false;
+                        user.AwayMessage = null;
+                    }
+                    IRCEvents.OnUserAwayStatusChanged(this, new UserReasonCommandEventArgs(message, user, user.AwayMessage));
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Try to handle an unknown numeric as a CAP numeric.
+        /// </summary>
+        /// <param name="message">The message that contains the numeric.</param>
+        public void HandleCapabilityNumeric(IRCMessage message)
+        {
         }
     }
 }

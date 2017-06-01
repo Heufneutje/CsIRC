@@ -46,6 +46,11 @@
         public bool IsAway { get; set; }
 
         /// <summary>
+        /// The user's current away message.
+        /// </summary>
+        public string AwayMessage { get; set; }
+
+        /// <summary>
         /// Creates a new IRC user instance from a nickname.
         /// </summary>
         /// <param name="nickname">The user's nickname.</param>

@@ -79,6 +79,11 @@
         /// </summary>
         public static event UserKickedHandler UserKicked;
 
+        /// <summary>
+        /// Event which is fired when a user's away status is set or removed. Requires IRCv3 away-notify to be enabled.
+        /// </summary>
+        public static event UserReasonCommandHandler UserAwayStatusChanged;
+
         #endregion Events
 
         #region Event Invokers
@@ -208,7 +213,7 @@
         /// </summary>
         /// <param name="sender">The core part or plugin that sent the event.</param>
         /// <param name="args">The arguments of the event.</param>
-        public static void OnUserQuit(object sender, UserCommandReasonEventArgs args)
+        public static void OnUserQuit(object sender, UserReasonCommandEventArgs args)
         {
             UserQuit.Invoke(sender, args);
         }
@@ -221,6 +226,16 @@
         public static void OnUserKicked(object sender, UserKickedEventArgs args)
         {
             UserKicked?.Invoke(sender, args);
+        }
+
+        /// <summary>
+        /// Fires event when a user's away status is set or removed.
+        /// </summary>
+        /// <param name="sender">The core part or plugin that sent the event.</param>
+        /// <param name="args">The arguments of the event.</param>
+        public static void OnUserAwayStatusChanged(object sender, UserReasonCommandEventArgs args)
+        {
+            UserAwayStatusChanged?.Invoke(sender, args);
         }
 
         #endregion Event Invokers
