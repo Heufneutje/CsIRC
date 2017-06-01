@@ -68,24 +68,6 @@ namespace CsIRC.Core
         }
 
         /// <summary>
-        /// Checks whether a list of users is online.
-        /// </summary>
-        /// <param name="nicknames">The users to check.</param>
-        public void SendISON(List<string> nicknames)
-        {
-            SendRaw("ISON", string.Join(" ", nicknames));
-        }
-
-        /// <summary>
-        /// Checks whether a nuser is online.
-        /// </summary>
-        /// <param name="nickname">The user to check.</param>
-        public void SendISON(string nickname)
-        {
-            SendISON(new List<string>() { nickname });
-        }
-
-        /// <summary>
         /// Invites a user into a given channel.
         /// </summary>
         /// <param name="channel">The channel to invite the user into.</param>
@@ -116,6 +98,24 @@ namespace CsIRC.Core
         }
 
         /// <summary>
+        /// Checks whether a list of users is online.
+        /// </summary>
+        /// <param name="nicknames">The users to check.</param>
+        public void SendISON(IEnumerable<string> nicknames)
+        {
+            SendRaw("ISON", string.Join(" ", nicknames));
+        }
+
+        /// <summary>
+        /// Checks whether a nuser is online.
+        /// </summary>
+        /// <param name="nickname">The user to check.</param>
+        public void SendISON(string nickname)
+        {
+            SendISON(new List<string>() { nickname });
+        }
+
+        /// <summary>
         /// Joins a given channel.
         /// </summary>
         /// <param name="channel">The channel that will be joined.</param>
@@ -135,6 +135,99 @@ namespace CsIRC.Core
                 SendRaw("JOIN", channel, key);
             else
                 SendRaw("JOIN", channel);
+        }
+
+        /// <summary>
+        /// Kicks a user from a given channel.
+        /// </summary>
+        /// <param name="channel">The channel to kick the user from.</param>
+        /// <param name="user">The user that should be kicked.</param>
+        /// <param name="reason">Optional. The reason for kicking the user.</param>
+        public void SendKICK(IRCChannel channel, IRCUser user, string reason = null)
+        {
+            SendKICK(channel.Name, user.Nickname);
+        }
+
+        /// <summary>
+        /// Kicks a user from a given channel.
+        /// </summary>
+        /// <param name="channel">The channel to kick the user from.</param>
+        /// <param name="nickname">The nickname of the user that should be kicked.</param>
+        /// <param name="reason">Optional. The reason for kicking the user.</param>
+        public void SendKICK(IRCChannel channel, string nickname, string reason = null)
+        {
+            SendKICK(channel.Name, nickname);
+        }
+
+        /// <summary>
+        /// Kicks a user from a given channel.
+        /// </summary>
+        /// <param name="channel">The channel to kick the user from.</param>
+        /// <param name="nickname">The nickname of the user that should be kicked.</param>
+        /// <param name="reason">Optional. The reason for kicking the user.</param>
+        public void SendKICK(string channel, string nickname, string reason = null)
+        {
+            if (string.IsNullOrEmpty(reason))
+                SendRaw("KICK", channel, nickname);
+            else
+                SendRaw("KICK", channel, GetLimitAppliedParameter(reason, _connection.Support.MaxKickReasonLength));
+        }
+
+        /// <summary>
+        /// Oper command to remove a given user from the server.
+        /// </summary>
+        /// <param name="user">The user that should be disconnected.</param>
+        /// <param name="reason">The reason for disconnecting the user.</param>
+        public void SendKILL(IRCUser user, string reason)
+        {
+            SendKILL(user.Nickname, reason);
+        }
+
+        /// <summary>
+        /// Oper command to remove a given user from the server.
+        /// </summary>
+        /// <param name="nickname">The nickname of the user that should be disconnected.</param>
+        /// <param name="reason">The reason for disconnecting the user.</param>
+        public void SendKILL(string nickname, string reason)
+        {
+            SendRaw("KILL", nickname, reason);
+        }
+
+        /// <summary>
+        /// Requests the network's server links.
+        /// </summary>
+        public void SendLINKS()
+        {
+            SendRaw("LINKS");
+        }
+
+        /// <summary>
+        /// Requests a list of channels on the server.
+        /// </summary>
+        /// <param name="searchString">Optional. A wildcard supported search string to find specific channels.</param>
+        public void SendLIST(string searchString = null)
+        {
+            SendLIST(new List<string> { searchString });
+        }
+
+        /// <summary>
+        /// Requests a list of channels on the server.
+        /// </summary>
+        /// <param name="searchStrings">Optional. A wildcard supported list of search strings to find specific channels.</param>
+        public void SendLIST(IEnumerable<string> searchStrings = null)
+        {
+            if (searchStrings?.Any() == true)
+                SendRaw("LIST", string.Join(",", searchStrings));
+            else
+                SendRaw("LIST");
+        }
+
+        /// <summary>
+        /// Requests server and network wide user and channel numbers.
+        /// </summary>
+        public void SendLUSERS()
+        {
+            SendRaw("LUSERS");
         }
 
         /// <summary>
@@ -163,7 +256,7 @@ namespace CsIRC.Core
         /// <param name="channel">The channel that will have its modes changed.</param>
         /// <param name="modes">The modes that will be changed.</param>
         /// <param name="parameters">The parameters that are needed for the changed modes.</param>
-        public void SendMODE(IRCChannel channel, string modes, List<string> parameters)
+        public void SendMODE(IRCChannel channel, string modes, IEnumerable<string> parameters)
         {
             SendMODE(channel.Name, modes, parameters, MessageTarget.Channel);
         }
@@ -174,7 +267,7 @@ namespace CsIRC.Core
         /// <param name="user">The user that will have their modes changed.</param>
         /// <param name="modes">The modes that will be changed.</param>
         /// <param name="parameters">The parameters that are needed for the changed modes.</param>
-        public void SendMODE(IRCUser user, string modes, List<string> parameters)
+        public void SendMODE(IRCUser user, string modes, IEnumerable<string> parameters)
         {
             SendMODE(user.Nickname, modes, parameters, MessageTarget.User);
         }
@@ -186,14 +279,62 @@ namespace CsIRC.Core
         /// <param name="modes">The modes that will be changed.</param>
         /// <param name="parameters">The parameters that are needed for the changed modes.</param>
         /// <param name="targetType">Whether the change is targetting a user or a channel.</param>
-        public void SendMODE(string target, string modes, List<string> parameters, MessageTarget targetType)
+        public void SendMODE(string target, string modes, IEnumerable<string> parameters, MessageTarget targetType)
         {
             ModeString modeString;
             if (targetType == MessageTarget.Channel)
-                modeString = new ModeString(modes, parameters, _connection.Support.ChannelModes, _connection.Support.StatusModes.Keys.ToList());
+                modeString = new ModeString(modes, parameters.ToList(), _connection.Support.ChannelModes, _connection.Support.StatusModes.Keys.ToList());
             else
-                modeString = new ModeString(modes, parameters, _connection.Support.UserModes, null);
+                modeString = new ModeString(modes, parameters.ToList(), _connection.Support.UserModes, null);
             SendMODE(target, modeString);
+        }
+
+        /// <summary>
+        /// Requests the message of the day for the current server or a given server on the network.
+        /// </summary>
+        /// <param name="server">Optional. The server to request the message of the day of. Requests the message of the day for the current server if undefined.</param>
+        public void SendMOTD(string server = null)
+        {
+            if (string.IsNullOrEmpty(server))
+                SendRaw("MOTD");
+            else
+                SendRaw("MOTD", server);
+        }
+
+        /// <summary>
+        /// Requests the names of all users in a given channel.
+        /// </summary>
+        /// <param name="channel">The channel to request the users of.</param>
+        public void SendNAMES(string channel)
+        {
+            SendNAMES(new List<string> { channel });
+        }
+
+        /// <summary>
+        /// Requests the names of all users in given channels.
+        /// </summary>
+        /// <param name="channels">The channels to request the users of.</param>
+        public void SendNAMES(IEnumerable<string> channels)
+        {
+            SendRaw("NAMES", string.Join(",", channels));
+        }
+
+        /// <summary>
+        /// Requests the names of all users in a given channel.
+        /// </summary>
+        /// <param name="channel">The channel to request the users of.</param>
+        public void SendNAMES(IRCChannel channel)
+        {
+            SendNAMES(channel.Name);
+        }
+
+        /// <summary>
+        /// Requests the names of all users in given channels.
+        /// </summary>
+        /// <param name="channels">The channels to request the users of.</param>
+        public void SendNAMES(IEnumerable<IRCChannel> channels)
+        {
+            SendNAMES(channels.Select(x => x.Name));
         }
 
         /// <summary>
@@ -203,6 +344,36 @@ namespace CsIRC.Core
         public void SendNICK(string nickname)
         {
             SendRaw("NICK", GetLimitAppliedParameter(nickname, _connection.Support.MaxNickLength));
+        }
+
+        /// <summary>
+        /// Sends a notice message to a given user or channel.
+        /// </summary>
+        /// <param name="target">The given user or channel.</param>
+        /// <param name="message">The message to be sent.</param>
+        public void SendNOTICE(string target, string message)
+        {
+            SendRaw("NOTICE", target, message);
+        }
+
+        /// <summary>
+        /// Sends a notice message to a given channel.
+        /// </summary>
+        /// <param name="channel">The given channel.</param>
+        /// <param name="message">The message to be sent.</param>
+        public void SendNOTICE(IRCChannel channel, string message)
+        {
+            SendPRIVMSG(channel.Name, message);
+        }
+
+        /// <summary>
+        /// Sends a notice message to a given user.
+        /// </summary>
+        /// <param name="user">The given user.</param>
+        /// <param name="message">The message to be sent.</param>
+        public void SendNOTICE(IRCUser user, string message)
+        {
+            SendPRIVMSG(user.Nickname, message);
         }
 
         /// <summary>

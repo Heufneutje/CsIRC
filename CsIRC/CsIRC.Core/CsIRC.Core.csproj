@@ -58,6 +58,7 @@
     <Compile Include="Events\NickChangedEventArgs.cs" />
     <Compile Include="Events\TopicChangedEventArgs.cs" />
     <Compile Include="Events\UserCommandReasonEventArgs.cs" />
+    <Compile Include="Events\UserKickedEventArgs.cs" />
     <Compile Include="Events\UserlistUpdatedEventArgs.cs" />
     <Compile Include="InputHandler.cs" />
     <Compile Include="IRCChannel.cs" />

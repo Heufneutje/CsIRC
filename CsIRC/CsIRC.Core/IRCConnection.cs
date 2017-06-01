@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Sockets;
 
 namespace CsIRC.Core
@@ -7,6 +8,7 @@ namespace CsIRC.Core
     public class IRCConnection
     {
         #region Fields & Properties
+
         private TcpClient _connection;
         private NetworkStream _connectionStream;
 
@@ -115,6 +117,36 @@ namespace CsIRC.Core
         public void SetUserModes(ModeString modeString)
         {
             modeString.ApplyModeChanges(UserModes);
+        }
+
+        /// <summary>
+        /// Retrieves a user object for the given nickname.
+        /// </summary>
+        /// <param name="nickname">The user's nickname.</param>
+        /// <returns>A user or null if the user is unknown to the client.</returns>
+        public IRCUser GetUserByNick(string nickname)
+        {
+            return Users.FirstOrDefault(x => x.Nickname == nickname);
+        }
+
+        /// <summary>
+        /// Retrieves a user object for the given prefix.
+        /// </summary>
+        /// <param name="prefix">The user's prefix.</param>
+        /// <returns>A user or null if the user is unknown to the client.</returns>
+        public IRCUser GetUserByPrefix(IRCHostmask prefix)
+        {
+            return GetUserByNick(prefix.Nickname);
+        }
+
+        /// <summary>
+        /// Retrieves a channel object for the given nickname.
+        /// </summary>
+        /// <param name="name">The channel's name.</param>
+        /// <returns>A channel or null if the channel is unknown to the client.</returns>
+        public IRCChannel GetChannelByName(string name)
+        {
+            return Channels.FirstOrDefault(x => x.Name == name);
         }
     }
 }

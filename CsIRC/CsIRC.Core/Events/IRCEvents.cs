@@ -74,6 +74,11 @@
         /// </summary>
         public static event UserReasonCommandHandler UserQuit;
 
+        /// <summary>
+        /// Event which is fired when a user is kicked from a channel.
+        /// </summary>
+        public static event UserKickedHandler UserKicked;
+
         #endregion Events
 
         #region Event Invokers
@@ -189,7 +194,7 @@
         }
 
         /// <summary>
-        /// Fires event which is fired when a channel's or user's modes are changed.
+        /// Fires event when a channel's or user's modes are changed.
         /// </summary>
         /// <param name="sender">The core part or plugin that sent the event.</param>
         /// <param name="args">The arguments of the event.</param>
@@ -199,13 +204,23 @@
         }
 
         /// <summary>
-        /// Fires event which is fired when a user leaves the server.
+        /// Fires event when a user leaves the server.
         /// </summary>
         /// <param name="sender">The core part or plugin that sent the event.</param>
         /// <param name="args">The arguments of the event.</param>
         public static void OnUserQuit(object sender, UserCommandReasonEventArgs args)
         {
             UserQuit.Invoke(sender, args);
+        }
+
+        /// <summary>
+        /// Fires event when a user is kicked from a channel.
+        /// </summary>
+        /// <param name="sender">The core part or plugin that sent the event.</param>
+        /// <param name="args">The arguments of the event.</param>
+        public static void OnUserKicked(object sender, UserKickedEventArgs args)
+        {
+            UserKicked?.Invoke(sender, args);
         }
 
         #endregion Event Invokers

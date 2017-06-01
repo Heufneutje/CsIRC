@@ -78,7 +78,7 @@ namespace CsIRC.Core
         private void HandleCommand(IRCMessage message)
         {
             IRCHostmask prefix = new IRCHostmask(message.Prefix);
-            IRCUser user = _connection.Users.FirstOrDefault(x => x.Nickname == prefix.Nickname);
+            IRCUser user = _connection.GetUserByPrefix(prefix);
             IRCChannel channel;
             string target;
 
@@ -102,7 +102,7 @@ namespace CsIRC.Core
                         _connection.Users.Add(user);
                     }
                     target = message.Parameters.First();
-                    channel = _connection.Channels.FirstOrDefault(x => x.Name == target);
+                    channel = _connection.GetChannelByName(target);
                     if (channel == null)
                     {
                         channel = new IRCChannel(target);
@@ -113,6 +113,22 @@ namespace CsIRC.Core
                     if (!channel.Users.ContainsKey(user))
                         channel.Users.Add(user, new List<char>());
                     IRCEvents.OnChannelJoined(this, new ChannelUserCommandEventArgs(message, channel, user));
+                    break;
+                case "KICK":
+                    channel = _connection.GetChannelByName(message.Parameters.First());
+                    if (channel == null)
+                        return;
+
+                    IRCHostmask kickedPrefix = new IRCHostmask(message.Parameters[1]);
+                    IRCUser kickedUser = _connection.GetUserByPrefix(kickedPrefix);
+                    if (kickedUser.Nickname == _connection.CurrentNickname)
+                        _connection.Channels.Remove(channel);
+                    else
+                        channel.Users.Remove(kickedUser);
+                    string kickReason = null;
+                    if (message.Parameters.Count > 2)
+                        kickReason = message.Parameters[2];
+                    IRCEvents.OnUserKicked(this, new UserKickedEventArgs(message, channel, user, kickedUser, kickReason));
                     break;
                 case "NICK":
                     string oldNick = user.Nickname;
@@ -130,7 +146,7 @@ namespace CsIRC.Core
                     ModeString modeString;
                     if (_connection.Support.ChannelTypes.Contains(target[0]))
                     {
-                        channel = _connection.Channels.FirstOrDefault(x => x.Name == target);
+                        channel = _connection.GetChannelByName(target);
                         if (channel != null)
                         {
                             modeString = new ModeString(message.Parameters[1], modeParams, _connection.Support.ChannelModes, _connection.Support.StatusModes.Keys.ToList());
@@ -152,7 +168,7 @@ namespace CsIRC.Core
                     target = message.Parameters.First();
                     if (_connection.Support.ChannelTypes.Contains(target[0]))
                     {
-                        channel = _connection.Channels.FirstOrDefault(x => x.Name == target);
+                        channel = _connection.GetChannelByName(target);
                         if (channel == null)
                             channel = new IRCChannel(target);
 
@@ -162,7 +178,7 @@ namespace CsIRC.Core
                         IRCEvents.OnMessageCommandReceived(this, new MessageCommandEventArgs(message, user));
                     break;
                 case "PART":
-                    channel = _connection.Channels.FirstOrDefault(x => x.Name == message.Parameters.First());
+                    channel = _connection.GetChannelByName(message.Parameters.First());
                     if (channel == null)
                         return;
 
@@ -202,7 +218,7 @@ namespace CsIRC.Core
                     IRCEvents.OnUserQuit(this, new UserCommandReasonEventArgs(message, user, quitReason));
                     break;
                 case "TOPIC":
-                    channel = _connection.Channels.FirstOrDefault(x => x.Name == message.Parameters.First());
+                    channel = _connection.GetChannelByName(message.Parameters.First());
                     if (channel == null)
                         return;
 
@@ -239,7 +255,7 @@ namespace CsIRC.Core
                     _connection.Support.ParseTokens(message.Parameters);
                     break;
                 case "324": // RPL_CHANNELMODEIS
-                    channel = _connection.Channels.FirstOrDefault(x => x.Name == message.Parameters[1]);
+                    channel = _connection.GetChannelByName(message.Parameters[1]);
                     List<string> modeParams = new List<string>();
                     if (message.Parameters.Count > 3)
                         modeParams = message.Parameters[3].Split(' ').ToList();
@@ -248,17 +264,17 @@ namespace CsIRC.Core
                     IRCEvents.OnModesChanged(this, new ModesChangedEventArgs(message, channel, modeString));
                     break;
                 case "329": // RPL_CREATIONTIME
-                    channel = _connection.Channels.FirstOrDefault(x => x.Name == message.Parameters[1]);
+                    channel = _connection.GetChannelByName(message.Parameters[1]);
                     if (channel != null)
                         channel.CreationTime = DateTimeUtils.FromUnixTime(Convert.ToInt64(message.Parameters[2]));
                     break;
                 case "332": // RPL_TOPIC
-                    channel = _connection.Channels.FirstOrDefault(x => x.Name == message.Parameters[1]);
+                    channel = _connection.GetChannelByName(message.Parameters[1]);
                     if (channel != null)
                         channel.Topic = message.Parameters[2];
                     break;
                 case "333": // RPL_TOPICWHOTIME
-                    channel = _connection.Channels.FirstOrDefault(x => x.Name == message.Parameters[1]);
+                    channel = _connection.GetChannelByName(message.Parameters[1]);
                     if (channel != null)
                     {
                         channel.TopicSetter = new IRCHostmask(message.Parameters[2]);
@@ -266,7 +282,7 @@ namespace CsIRC.Core
                     }
                     break;
                 case "352": // RPL_WHOREPLY
-                    IRCUser whoUser = _connection.Users.FirstOrDefault(x => x.Nickname == message.Parameters[5]);
+                    IRCUser whoUser = _connection.GetUserByNick(message.Parameters[5]);
                     if (whoUser == null)
                         return;
 
@@ -281,7 +297,7 @@ namespace CsIRC.Core
                         whoUser.IsOper = true;
                         flags.RemoveAt(0);
                     }
-                    channel = _connection.Channels.FirstOrDefault(x => x.Name == message.Parameters[1]);
+                    channel = _connection.GetChannelByName(message.Parameters[1]);
                     if (channel != null && channel.Users.ContainsKey(whoUser))
                     {
                         channel.Users[whoUser] = new List<char>();
@@ -296,7 +312,7 @@ namespace CsIRC.Core
                     break;
                 case "353": // RPL_NAMREPLY
                     List<IRCUser> updatedUsers = new List<IRCUser>();
-                    channel = _connection.Channels.FirstOrDefault(x => x.Name == message.Parameters[2]);
+                    channel = _connection.GetChannelByName(message.Parameters[2]);
                     if (channel.UserlistComplete)
                     {
                         channel.UserlistComplete = false;
@@ -310,7 +326,7 @@ namespace CsIRC.Core
                             ranks.Add(_connection.Support.StatusSymbols[prefix.Nickname[0]]);
                             prefix.Nickname = prefix.Nickname.Substring(1);
                         }
-                        IRCUser user = _connection.Users.FirstOrDefault(x => x.Nickname == prefix.Nickname);
+                        IRCUser user = _connection.GetUserByPrefix(prefix);
                         if (user == null)
                         {
                             user = new IRCUser(prefix);
@@ -322,7 +338,7 @@ namespace CsIRC.Core
                     IRCEvents.OnUserlistUpdated(this, new UserlistUpdatedEventArgs(message, channel, updatedUsers));
                     break;
                 case "366": // RPL_ENDOFNAMES
-                    channel = _connection.Channels.FirstOrDefault(x => x.Name == message.Parameters[1]);
+                    channel = _connection.GetChannelByName(message.Parameters[1]);
                     if (channel != null)
                         channel.UserlistComplete = true;
                     break;

@@ -69,4 +69,11 @@
     /// <param name="sender">The core part or plugin that sent the event.</param>
     /// <param name="args">The arguments of the event.</param>
     public delegate void UserReasonCommandHandler(object sender, UserCommandReasonEventArgs args);
+
+    /// <summary>
+    /// Handler for events where a user is kicked from a channel.
+    /// </summary>
+    /// <param name="sender">The core part or plugin that sent the event.</param>
+    /// <param name="args">The arguments of the event.</param>
+    public delegate void UserKickedHandler(object sender, UserKickedEventArgs args);
 }
