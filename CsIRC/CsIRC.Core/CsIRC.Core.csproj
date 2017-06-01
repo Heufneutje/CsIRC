@@ -43,6 +43,7 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="CapHandler.cs" />
     <Compile Include="ClientCore.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Events\Delegates.cs" />

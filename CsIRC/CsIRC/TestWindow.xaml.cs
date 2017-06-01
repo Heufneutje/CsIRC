@@ -22,6 +22,7 @@ namespace CsIRC
             IRCEvents.MessageCommandReceived += IRCEvents_MessageCommandReceived;
             IRCEvents.UserlistUpdated += IRCEvents_UserlistUpdated;
             _connection.CurrentNickname = "CSIRCTest";
+            _connection.Capability.RequestAvailableCapabilities();
             _connection.Output.SendNICK("CSIRCTest");
             _connection.Output.SendUSER("Test", "Just Heufy messing around");
 

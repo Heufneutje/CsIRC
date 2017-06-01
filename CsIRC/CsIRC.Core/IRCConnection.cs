@@ -28,6 +28,11 @@ namespace CsIRC.Core
         public SupportHandler Support { get; private set; }
 
         /// <summary>
+        /// The IRCv3 capability helper for this connection.
+        /// </summary>
+        public CapHandler Capability { get; set; }
+
+        /// <summary>
         /// Whether or not the connection is active.
         /// </summary>
         public bool IsConnected { get; private set; }
@@ -88,6 +93,7 @@ namespace CsIRC.Core
             Input = new InputHandler(new StreamReader(_connectionStream), this);
             Output = new OutputHandler(new StreamWriter(_connectionStream), this);
             Support = new SupportHandler();
+            Capability = new CapHandler(this);
 
             IsConnected = true;
         }

@@ -84,6 +84,9 @@ namespace CsIRC.Core
 
             switch (message.Command)
             {
+                case "CAP":
+                    _connection.Capability.HandleCapReply(message);
+                    break;
                 case "INVITE":
                     if (user == null)
                         user = new IRCUser(prefix);
@@ -318,14 +321,16 @@ namespace CsIRC.Core
                         channel.UserlistComplete = false;
                         channel.Users.Clear();
                     }
-                    foreach (IRCHostmask prefix in message.Parameters[3].Split(' ').Select(x => new IRCHostmask(x)))
+                    foreach (string hostmask in message.Parameters[3].Split(' '))
                     {
                         List<char> ranks = new List<char>();
-                        while (_connection.Support.StatusSymbols.ContainsKey(prefix.Nickname[0]))
+                        string cleanHostmask = hostmask;
+                        while (_connection.Support.StatusSymbols.ContainsKey(cleanHostmask[0]))
                         {
-                            ranks.Add(_connection.Support.StatusSymbols[prefix.Nickname[0]]);
-                            prefix.Nickname = prefix.Nickname.Substring(1);
+                            ranks.Add(_connection.Support.StatusSymbols[cleanHostmask[0]]);
+                            cleanHostmask = cleanHostmask.Substring(1);
                         }
+                        IRCHostmask prefix = new IRCHostmask(cleanHostmask);
                         IRCUser user = _connection.GetUserByPrefix(prefix);
                         if (user == null)
                         {
