@@ -17,8 +17,8 @@
             <xcad:DockingManager.DocumentHeaderTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <Image Source="{Binding IconSource}" Margin="0,0,4,0"/>
-                        <TextBlock Text="{Binding Title}"/>
+                        <Image Source="{Binding IconSource}" Margin="0,0,4,0" />
+                        <TextBlock Text="{Binding Title}" />
                     </StackPanel>
                 </DataTemplate>
             </xcad:DockingManager.DocumentHeaderTemplate>
@@ -28,16 +28,13 @@
                         <xcad:LayoutAnchorable ContentId="properties" Title="Properties" CanHide="False" CanClose="False"
                                             AutoHideWidth="240">
                             <xctk:PropertyGrid NameColumnWidth="110"
-                        SelectedObject="{Binding ElementName=_layoutRoot, Path=LastFocusedDocument.Content}"/>
+                        SelectedObject="{Binding ElementName=_layoutRoot, Path=LastFocusedDocument.Content}" />
                         </xcad:LayoutAnchorable>
                     </xcad:LayoutAnchorablePane>-->
                     <xcad:LayoutDocumentPaneGroup>
                         <xcad:LayoutDocumentPane>
-                            <xcad:LayoutDocument ContentId="document1" Title="Document 1">
-                                <Button Content="Document 1 Content" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </xcad:LayoutDocument>
-                            <xcad:LayoutDocument ContentId="document2" Title="Document 2">
-                                <TextBox x:Name="textBox" Text="Document 2 Content" AcceptsReturn="True"/>
+                            <xcad:LayoutDocument ContentId="document2" Title="Server">
+                                <TextBox x:Name="textBox" AcceptsReturn="True" />
                             </xcad:LayoutDocument>
                         </xcad:LayoutDocumentPane>
                     </xcad:LayoutDocumentPaneGroup>
@@ -52,7 +49,7 @@
                                     <FlowDocument>
                                         <Paragraph FontSize="14" FontFamily="Segoe">
                                             This is the content of the Journal Pane.
-                                            <LineBreak/>
+                                            <LineBreak />
                                             A
                                             <Bold>RichTextBox</Bold> has been added here
                                         </Paragraph>

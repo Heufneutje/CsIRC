@@ -215,7 +215,7 @@
         /// <param name="args">The arguments of the event.</param>
         public static void OnUserQuit(object sender, UserReasonCommandEventArgs args)
         {
-            UserQuit.Invoke(sender, args);
+            UserQuit?.Invoke(sender, args);
         }
 
         /// <summary>

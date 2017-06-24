@@ -278,6 +278,7 @@ namespace CsIRC.Core
                     channel = _connection.GetChannelByName(message.Parameters[1]);
                     if (channel != null)
                         channel.Topic = message.Parameters[2];
+                    IRCEvents.OnTopicChanged(this, new TopicChangedEventArgs(message, channel, null, null, message.Parameters[2]));
                     break;
                 case "333": // RPL_TOPICWHOTIME
                     channel = _connection.GetChannelByName(message.Parameters[1]);

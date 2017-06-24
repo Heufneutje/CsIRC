@@ -478,7 +478,7 @@ namespace CsIRC.Core
                 return;
 
             string lastParam = parameters.Last();
-            if (lastParam.Contains(' '))
+            if (lastParam.Contains(' ') && parameters.Length > 1)
                 parameters[parameters.Length - 1] = $":{lastParam}";
 
             string lineToSend = string.Join(" ", parameters);
