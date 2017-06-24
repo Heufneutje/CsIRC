@@ -35,6 +35,11 @@ namespace CsIRC.Core
         public Dictionary<string, string> Tags { get; private set; }
 
         /// <summary>
+        /// The date and time the message is received. Will default to current time. IRCv3 server-time will be used if available.
+        /// </summary>
+        public DateTime ReceivedAt { get; private set; }
+
+        /// <summary>
         /// Creates a new instance of a received IRC message from a raw IRC line.
         /// </summary>
         /// <param name="rawLine">The raw IRC line that was received from the server.</param>
@@ -42,6 +47,7 @@ namespace CsIRC.Core
         {
             // Based on https://github.com/ElementalAlchemist/txircd/blob/93f949e297e78a802932c239a6c942cb1c3b8b50/txircd/ircbase.py#L12-L50
             RawLine = rawLine;
+            ReceivedAt = DateTime.Now;
 
             string line = rawLine.Replace("\0", "");
             if (line.Length == 0)
